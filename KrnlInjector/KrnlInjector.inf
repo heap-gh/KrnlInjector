@@ -1,0 +1,77 @@
+;
+; KrnlInjector.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=KrnlInjector.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+KrnlInjector_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+KrnlInjector.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%KrnlInjector.DeviceDesc%=KrnlInjector_Device, Root\KrnlInjector ; TODO: edit hw-id
+
+[KrnlInjector_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+KrnlInjector.sys
+
+;-------------- Service installation
+[KrnlInjector_Device.NT.Services]
+AddService = KrnlInjector,%SPSVCINST_ASSOCSERVICE%, KrnlInjector_Service_Inst
+
+; -------------- KrnlInjector driver install sections
+[KrnlInjector_Service_Inst]
+DisplayName    = %KrnlInjector.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\KrnlInjector.sys
+
+;
+;--- KrnlInjector_Device Coinstaller installation ------
+;
+
+[KrnlInjector_Device.NT.CoInstallers]
+AddReg=KrnlInjector_Device_CoInstaller_AddReg
+CopyFiles=KrnlInjector_Device_CoInstaller_CopyFiles
+
+[KrnlInjector_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[KrnlInjector_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[KrnlInjector_Device.NT.Wdf]
+KmdfService =  KrnlInjector, KrnlInjector_wdfsect
+[KrnlInjector_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "KrnlInjector Installation Disk"
+KrnlInjector.DeviceDesc = "KrnlInjector Device"
+KrnlInjector.SVCDESC = "KrnlInjector Service"
