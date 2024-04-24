@@ -49,7 +49,7 @@ NTSTATUS ManualMap(PVOID inputBuffer, ULONG inputBufferLength, PVOID outputBuffe
 	}
 	
 	
-	// find valid handles to target process
+	// check configFlags and find valid handles to target process
 
 	if ((configFlags & CONFIG_HIJACK_HANDLE) == CONFIG_HIJACK_HANDLE)
 	{
@@ -58,6 +58,9 @@ NTSTATUS ManualMap(PVOID inputBuffer, ULONG inputBufferLength, PVOID outputBuffe
 	
 	// Allocate Memory for/in the process
 	
+
+
+
 
 
 	// === write directly to a processes physical memory ===
